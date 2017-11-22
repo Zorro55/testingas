@@ -21,8 +21,9 @@ for x in ${diff_files}
 do
    if [ "$x" == "a.txt" ]; then
         echo "a.txt was changed"
-	else 
-	/dev/null
-        exit
-    fi
- done 
+	    exit	
+   elif [ "$x" -ne "a.txt" ]; then
+   echo "skip because no changes"
+   exit
+   fi
+done
