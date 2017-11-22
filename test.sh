@@ -32,6 +32,6 @@ for x in ${diff_files}
 do
   #echo "${x}"
   bom_sniffer "${x}"
-  check_rc $? "BOM character detected in ${x}," 
-  echo "hi" 
+  check_rc $? "BOM character detected in ${x},"  
+  echo ${diff_files}
   done 
