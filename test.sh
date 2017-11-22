@@ -1,28 +1,37 @@
 #!/bin/bash
+bom_sniffer() { 
+  # exit code is 1 if character not found
+  head -c3 "$1" | LC_ALL=C grep -qP '\xef\xbb\xbf'; 
+  if [ $? -eq 0 ] 
+  then 
+    echo "BOM SNIFFER DETECTED BOM CHARACTER IN FILE \"$1\""
+    exit 1
+  fi
+}
+check_rc() {
+  # exit if passed in value is not = 0
+  # $1 = return code
+  # $2 = command / label
+  if [ $1 -ne 0 ]
+  then
+    echo "$2 command failed"
+    exit 1
+  fi
+}
 
-set -e
-
-job_name="whatever"
-JOB_URL="http://myserver:8080/job/${job_name}/"
-FILTER_PATH="path/to/folder/to/monitor"
-
-python_func="import json, sys
-obj = json.loads(sys.stdin.read())
-ch_list = obj['changeSet']['items']
-_list = [ j['affectedPaths'] for j in ch_list ]
-for outer in _list:
-  for inner in outer:
-    print inner
-"
-
-_affected_files=`curl --silent ${JOB_URL}${BUILD_NUMBER}'/api/json' | python -c "$python_func"`
-
-if [ -z "`echo \"$_affected_files\" | grep \"${FILTER_PATH}\"`" ]; then
-  echo "[INFO] no changes detected in ${FILTER_PATH}"
-  exit 0
-else
-  echo "[INFO] changed files detected: "
-  for a_file in `echo "$_affected_files" | grep "${FILTER_PATH}"`; do
-    echo "    $a_file"
-  done;
-fi;
+# finding files that differ from this commit and master
+echo 'git fetch'
+check_rc $? 'echo git fetch'
+git fetch
+check_rc $? 'git fetch'
+echo 'git diff --name-only origin/master'
+check_rc $? 'echo git diff'
+diff_files=`git diff --name-only origin/master | xargs`
+check_rc $? 'git diff'
+for x in ${diff_files}
+do
+  #echo "${x}"
+  bom_sniffer "${x}"
+  check_rc $? "BOM character detected in ${x}," 
+  echo "hi" 
+  done 
