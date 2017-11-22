@@ -22,8 +22,6 @@ do
    if [ "$x" == "a.txt" ]; then
         echo "a.txt was changed"
 	    exit	
-   elif [ "$x" -ne "a.txt" ]; then
-   echo "skip because no changes"
-   exit
    fi
 done
+ 
