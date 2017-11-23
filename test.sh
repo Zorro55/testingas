@@ -22,6 +22,7 @@ do
    if [ "$x" == "a.txt" ]; then
         echo "a.txt was changed"
 	    exit	
+	else echo "no changes" 
    fi
 done
  
